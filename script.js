@@ -17,7 +17,7 @@ function Test() {
     draw_biome_centers(3, "red")
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
-    
+
 }
 
 class Point {
