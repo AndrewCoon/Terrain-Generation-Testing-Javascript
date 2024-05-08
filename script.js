@@ -12,6 +12,9 @@ const biomeseedcountH = document.getElementById('biome_seed_count')
 // An array of the center points of each biome
 var seed_locs = []
 
+// An array to store colors for debugging biome setting
+var seed_colors = []
+
 var t_height = [];
 var t_heat = [];
 var t_humidity = [];
@@ -20,14 +23,16 @@ var t_map = []
 const showNoise = true;
 function Test() {
     // new_noise_map(400, 400); // Show noise var
- 
+
     generate_quadrants(3, 3) // Will generate x * y quadrants
     draw_biome_centers(3, "red")
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
     generate_noise_maps();
     generate_tile_map();
+    set_biome_index();
 
+    show_biomes();
 }
 
 class Point {
@@ -76,7 +81,7 @@ var data = image.data;
 
 function new_noise_map(_x, _y) {
     var map = []
-    
+
     perlin.seed()
     for (var x = 0; x < _x; x++) {
         map[x] = []
@@ -93,7 +98,7 @@ function new_noise_map(_x, _y) {
         }
     }
 
-    if(showNoise) ctx.putImageData(image, 0, 0);
+    if (showNoise) ctx.putImageData(image, 0, 0);
 
     return map;
 }
@@ -105,8 +110,8 @@ function generate_noise_maps() {
 }
 
 function set_biome_index() {
-    for(let y = 0; y < height; y++) {
-        for(let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
             var tile_biome = get_closest_biome_seed(x, y);
             t_map[x][y].biome_index = tile_biome;
         }
@@ -117,7 +122,7 @@ function get_closest_biome_seed(x, y) {
     let closest_seed_index = 0;
     let closest_seed_dist = Infinity;
 
-    for ( let seed_index = 0; seed_index < seed_locs.length; seed_index++) {
+    for (let seed_index = 0; seed_index < seed_locs.length; seed_index++) {
         let seed = seed_locs[seed_index];
         let dist = Math.pow(seed.x - x, 2) + Math.pow(seed.y - y)
         dist = Math.pow(dist, .5)
@@ -142,9 +147,22 @@ function generate_tile_map() {
 function add_biome_nodes() {
     t_map.forEach(element => {
         element.forEach(tile => {
-            
+
         });
     });
 }
 
+function show_biomes() {
+    for (var i = 0; i < seed_locs.length; i++) {
+        seed_colors.push(Math.floor(Math.random() * 16777215).toString(16))
+    }
+
+    t_map.forEach(row => {
+        row.forEach(tile => {
+            let biome_index = tile.biome_index;
+            ctx.fillStyle = seed_colors[biome_index];
+            ctx.fillRect(element.point.x, element.point.y, 1, 1);
+        });
+    })
+}
 Test();
