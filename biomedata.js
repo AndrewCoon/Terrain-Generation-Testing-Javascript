@@ -1,12 +1,14 @@
 class BiomeData {
 
+    biome_index = -1
+
     height_nodes = []
     heat_nodes = []
     humidity_nodes = []
 
-    avg_height = 0
-    avg_heat = 0
-    avg_humidity = 0
+    avg_height = -1
+    avg_heat = -1
+    avg_humidity = -1
 
     constructor() { }
 

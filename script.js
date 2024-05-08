@@ -26,6 +26,7 @@ function Test() {
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
     generate_noise_maps();
+    generate_tile_map();
 
 }
 
@@ -136,6 +137,14 @@ function generate_tile_map() {
             t_map[x][y] = new Tile(new Point(x, y))
         }
     }
+}
+
+function add_biome_nodes() {
+    t_map.forEach(element => {
+        element.forEach(tile => {
+            
+        });
+    });
 }
 
 Test();
