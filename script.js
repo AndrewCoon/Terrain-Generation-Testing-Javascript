@@ -12,13 +12,21 @@ const biomeseedcountH = document.getElementById('biome_seed_count')
 // An array of the center points of each biome
 var seed_locs = []
 
+var t_height = [];
+var t_heat = [];
+var t_humidity = [];
+
 const showNoise = true;
 function Test() {
-    new_noise_map(400, 400); // Show noise var
-
+    // new_noise_map(400, 400); // Show noise var
+ 
     generate_quadrants(3, 3) // Will generate x * y quadrants
     draw_biome_centers(3, "red")
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
+
+    generate_noise_maps();
+
+    
 }
 
 class Point {
@@ -60,10 +68,11 @@ var image = ctx.createImageData(canvas.width, canvas.height);
 var data = image.data;
 
 function new_noise_map(_x, _y) {
-    var map = [[]]
+    var map = []
     
     perlin.seed()
     for (var x = 0; x < canvas.width; x++) {
+        map[x] = []
         for (var y = 0; y < _y; y++) {
             var value = Math.abs(perlin.get(x / 75, y / 75));
             value *= 256;
@@ -82,8 +91,10 @@ function new_noise_map(_x, _y) {
     return map;
 }
 
-function generate_noise() {
-
+function generate_noise_maps() {
+    t_heat = new_noise_map(height, width)
+    t_humidity = new_noise_map(height, width)
+    t_height = new_noise_map(height, width)
 }
 
 
