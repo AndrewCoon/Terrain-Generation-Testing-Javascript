@@ -12,12 +12,13 @@ const biomeseedcountH = document.getElementById('biome_seed_count')
 // An array of the center points of each biome
 var seed_locs = []
 
+const showNoise = true;
 function Test() {
-    // generate_quadrants(3, 3) // Will generate x * y quadrants
-    // draw_biome_centers(3, "red")
-    // biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
+    new_noise_map(400, 400); // Show noise var
 
-    new_noise_map();
+    generate_quadrants(3, 3) // Will generate x * y quadrants
+    draw_biome_centers(3, "red")
+    biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 }
 
 class Point {
@@ -58,21 +59,27 @@ function draw_biome_centers(size, color) {
 var image = ctx.createImageData(canvas.width, canvas.height);
 var data = image.data;
 
-function new_noise_map(x, y) {
+function new_noise_map(_x, _y) {
+    var map = [[]]
+    
+    perlin.seed()
     for (var x = 0; x < canvas.width; x++) {
-        //if (x % 100 == 0) {
-        //  noise.seed(Math.random());
-        //}
-        for (var y = 0; y < canvas.height; y++) {
-            var value = Math.abs(noise.perlin2(x / 100, y / 100));
+        for (var y = 0; y < _y; y++) {
+            var value = Math.abs(perlin.get(x / 75, y / 75));
             value *= 256;
 
-            var cell = (x + y * canvas.width) * 4;
+            map[x][y] = value;
+
+            // For showing it as image
+            var cell = (x + y * _x) * 4;
             data[cell] = data[cell + 1] = data[cell + 2] = value;
-            data[cell] += Math.max(0, (25 - value) * 8);
             data[cell + 3] = 255; // alpha.
         }
     }
+
+    if(showNoise) ctx.putImageData(image, 0, 0);
+
+    return map;
 }
 
 function generate_noise() {
