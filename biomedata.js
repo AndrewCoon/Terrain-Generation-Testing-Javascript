@@ -1,5 +1,6 @@
 class BiomeData {
 
+    biome_type = "none"
     biome_index = -1
 
     height_nodes = []
@@ -38,4 +39,16 @@ class BiomeData {
     get avg_heat() { return this.avg_heat }
     get avg_height() { return this.avg_height }
     get avg_humidity() { return this.avg_humidity }
+}
+
+class BiomeType {
+    name
+    requirements
+    color
+ 
+    constructor(name, reqs, col) {
+        this.name = name
+        this.requirements = reqs
+        this.color = col
+    }
 }
