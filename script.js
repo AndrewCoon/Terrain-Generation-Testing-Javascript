@@ -12,6 +12,9 @@ const biomeseedcountH = document.getElementById('biome_seed_count')
 // An array of the center points of each biome
 var seed_locs = []
 
+// The biome data for each biome
+var biome_data = []
+
 // An array to store colors for debugging biome setting
 var seed_colors = []
 
@@ -69,6 +72,7 @@ function generate_quadrants(x_div, y_div) {
         for (let y = 0; y < y_div; y++) {
             let temp_point = new Point(random(0, quad_width) + x * quad_width, random(0, quad_height) + y * quad_height);
             seed_locs.push(temp_point)
+            biome_data.push(new BiomeData())
         }
     }
 }
@@ -154,7 +158,7 @@ function generate_tile_map() {
 function add_biome_nodes() {
     t_map.forEach(element => {
         element.forEach(tile => {
-            
+
         });
     });
 }
