@@ -32,8 +32,11 @@ function Test() {
     generate_tile_map();
     set_biome_index();
 
+    add_biome_nodes();
+    compute_biome_averages();
+
     // new_noise_map(400, 400); // Show noise var
-    show_biomes();
+    // show_biomes();
     draw_biome_centers(3, "red")
 }
 
@@ -158,7 +161,7 @@ function generate_tile_map() {
 function add_biome_nodes() {
     t_map.forEach(element => {
         element.forEach(tile => {
-
+            biome_data[tile.biome_index].add_node(tile.height, tile.heat, tile.humidity)
         });
     });
 }
@@ -182,5 +185,11 @@ function show_biomes() {
     }
 
     ctx.putImageData(biome_image, 0, 0);
+}
+
+function compute_biome_averages() {
+    biome_data.forEach(biome => {
+        biome.compute_averages();
+    })
 }
 Test();
