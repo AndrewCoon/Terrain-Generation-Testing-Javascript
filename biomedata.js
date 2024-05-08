@@ -18,7 +18,7 @@ class BiomeData {
         for (let i = 0; i < vals.length; i++) {
             sum += vals[i];
         }
-      
+
         const average = sum / vals.length;
         return average;
     }

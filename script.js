@@ -22,23 +22,30 @@ var t_map = []
 
 const showNoise = true;
 function Test() {
-    // new_noise_map(400, 400); // Show noise var
-
-    generate_quadrants(3, 3) // Will generate x * y quadrants
-    draw_biome_centers(3, "red")
+    generate_quadrants(5, 3) // Will generate x * y quadrants
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
     generate_noise_maps();
     generate_tile_map();
     set_biome_index();
 
+    // new_noise_map(400, 400); // Show noise var
     show_biomes();
+    draw_biome_centers(3, "red")
 }
 
 class Point {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+}
+
+class RGB {
+    constructor(r, g, b) {
+        this.r = r;
+        this.b = b;
+        this.g = g;
     }
 }
 
@@ -76,8 +83,8 @@ function draw_biome_centers(size, color) {
     }
 }
 
-var image = ctx.createImageData(canvas.width, canvas.height);
-var data = image.data;
+var noise_image = ctx.createImageData(canvas.width, canvas.height);
+var noise_data = noise_image.data;
 
 function new_noise_map(_x, _y) {
     var map = []
@@ -93,12 +100,12 @@ function new_noise_map(_x, _y) {
 
             // For showing it as image
             var cell = (x + y * _x) * 4;
-            data[cell] = data[cell + 1] = data[cell + 2] = value;
-            data[cell + 3] = 255; // alpha.
+            noise_data[cell] = noise_data[cell + 1] = noise_data[cell + 2] = value;
+            noise_data[cell + 3] = 255; // alpha.
         }
     }
 
-    if (showNoise) ctx.putImageData(image, 0, 0);
+    if (showNoise) ctx.putImageData(noise_image, 0, 0);
 
     return map;
 }
@@ -124,8 +131,8 @@ function get_closest_biome_seed(x, y) {
 
     for (let seed_index = 0; seed_index < seed_locs.length; seed_index++) {
         let seed = seed_locs[seed_index];
-        let dist = Math.pow(seed.x - x, 2) + Math.pow(seed.y - y)
-        dist = Math.pow(dist, .5)
+        let dist = Math.pow(seed.x - x, 2) + Math.pow(seed.y - y, 2)
+        dist = Math.sqrt(dist)
 
         if (dist < closest_seed_dist && dist > 2) { // TODO: Check why it should be greater than 2
             closest_seed_index = seed_index;
@@ -147,22 +154,29 @@ function generate_tile_map() {
 function add_biome_nodes() {
     t_map.forEach(element => {
         element.forEach(tile => {
-
+            
         });
     });
 }
 
+var biome_image = ctx.createImageData(canvas.width, canvas.height);
+var biome_image_data = biome_image.data;
+
 function show_biomes() {
     for (var i = 0; i < seed_locs.length; i++) {
-        seed_colors.push(Math.floor(Math.random() * 16777215).toString(16))
+        seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
     }
 
-    t_map.forEach(row => {
-        row.forEach(tile => {
-            let biome_index = tile.biome_index;
-            ctx.fillStyle = seed_colors[biome_index];
-            ctx.fillRect(element.point.x, element.point.y, 1, 1);
-        });
-    })
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            var cell = (x + y * width) * 4;
+            biome_image_data[cell + 0] = seed_colors[t_map[x][y].biome_index].r
+            biome_image_data[cell + 1] = seed_colors[t_map[x][y].biome_index].g
+            biome_image_data[cell + 2] = seed_colors[t_map[x][y].biome_index].b
+            biome_image_data[cell + 3] = 255; // alpha.
+        }
+    }
+
+    ctx.putImageData(biome_image, 0, 0);
 }
 Test();
