@@ -107,7 +107,7 @@ function set_biome_index() {
     for(let y = 0; y < height; y++) {
         for(let x = 0; x < width; x++) {
             var tile_biome = get_closest_biome_seed(x, y);
-
+            t_map[x][y].biome_index = tile_biome;
         }
     }
 }
@@ -135,7 +135,6 @@ function generate_tile_map() {
         for (let y = 0; y < height; y++) {
             t_map[x][y] = new Tile(new Point(x, y))
         }
-        
     }
 }
 
