@@ -42,13 +42,32 @@ class BiomeData {
 }
 
 class BiomeType {
-    name
-    requirements
-    color
- 
-    constructor(name, reqs, col) {
+    name = "none"
+    requirements = []
+    color = "white"
+
+    biomes = [
+        ["Grasslands", ["low", "humid", "hot"], [30, 200, 30]],
+        ["Tundra", ["low", "dry", "cold"], [240, 240, 240]],
+        ["Mountain", ["high", "dry", "cold"], [100, 100, 100]]
+        ["Desert", ["low", "dry", "cold"], [195, 212, 119]]
+        ["Null", ["", "", ""], [180, 63, 209]]
+    ]
+
+    constructor(name, reqs) {
         this.name = name
         this.requirements = reqs
-        this.color = col
+    }
+
+    set_biome() { // TODO: revampt this system
+        this.biomes.forEach(biome => {
+            if (this.requirements.includes(biome[1][0]) && this.requirements.includes(biome[1][1]) && this.requirements.includes(biome[1][2])) {
+                this.biome_type = biome[0]
+                this.color = biome[2]
+            } else {
+                this.biome_type = "Null"
+                this.color = [180, 63, 209]
+            }
+        })
     }
 }

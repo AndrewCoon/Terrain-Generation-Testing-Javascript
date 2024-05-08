@@ -35,6 +35,8 @@ function Test() {
     add_biome_nodes();
     compute_biome_averages();
 
+    set_biome_types();
+
     // new_noise_map(400, 400); // Show noise var
     // show_biomes();
     draw_biome_centers(3, "red")
@@ -192,4 +194,20 @@ function compute_biome_averages() {
         biome.compute_averages();
     })
 }
+
+function set_biome_types() {
+    biome_data.forEach(biome => {
+        // Maybe change this system in the future
+        let reqs = []
+        if (biome.avg_heat > 0.5) reqs.push("hot")
+        if (biome.avg_heat < 0.5) reqs.push("cold")
+        if (biome.avg_humidity > 0.5) reqs.push("humid")
+        if (biome.avg_humidity < 0.5) reqs.push("dry")
+        if (biome.avg_height > 0.5) reqs.push("high")
+        if (biome.avg_height < 0.5) reqs.push("low")
+
+        biome.requirements = reqs
+    })
+}
+
 Test();
