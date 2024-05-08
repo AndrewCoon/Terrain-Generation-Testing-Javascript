@@ -26,7 +26,7 @@ function Test() {
 
     generate_noise_maps();
 
-    
+
 }
 
 class Point {
@@ -97,6 +97,30 @@ function generate_noise_maps() {
     t_height = new_noise_map(height, width)
 }
 
+function set_biome_index() {
+    for(let y = 0; y < height; y++) {
+        for(let x = 0; x < width; x++) {
+            var tile_biome = get_closest_biome_seed(x, y);
+            
+        }
+    }
+}
 
+function get_closest_biome_seed(x, y) {
+    let closest_seed_index = 0;
+    let closest_seed_dist = Infinity;
+
+    for ( let seed_index = 0; seed_index < seed_locs.length; seed_index++) {
+        let seed = seed_locs[seed_index];
+        let dist = Math.pow(seed.x - x, 2) + Math.pow(seed.y - y)
+        dist = Math.pow(dist, .5)
+
+        if (dist < closest_seed_dist && dist > 2) { // TODO: Check why it should be greater than 2
+            closest_seed_index = seed_index;
+            closest_seed_dist = dist;
+        }
+    }
+    return closest_seed_index;
+}
 
 Test();
