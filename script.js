@@ -15,6 +15,7 @@ var seed_locs = []
 var t_height = [];
 var t_heat = [];
 var t_humidity = [];
+var t_map = []
 
 const showNoise = true;
 function Test() {
@@ -26,13 +27,18 @@ function Test() {
 
     generate_noise_maps();
 
-
 }
 
 class Point {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+}
+
+class Tile {
+    constructor(_point) {
+        this.point = _point;
     }
 }
 
@@ -71,7 +77,7 @@ function new_noise_map(_x, _y) {
     var map = []
     
     perlin.seed()
-    for (var x = 0; x < canvas.width; x++) {
+    for (var x = 0; x < _x; x++) {
         map[x] = []
         for (var y = 0; y < _y; y++) {
             var value = Math.abs(perlin.get(x / 75, y / 75));
@@ -101,7 +107,7 @@ function set_biome_index() {
     for(let y = 0; y < height; y++) {
         for(let x = 0; x < width; x++) {
             var tile_biome = get_closest_biome_seed(x, y);
-            
+
         }
     }
 }
@@ -121,6 +127,16 @@ function get_closest_biome_seed(x, y) {
         }
     }
     return closest_seed_index;
+}
+
+function generate_tile_map() {
+    for (let x = 0; x < width; x++) {
+        t_map[x] = []
+        for (let y = 0; y < height; y++) {
+            t_map[x][y] = new Tile(new Point(x, y))
+        }
+        
+    }
 }
 
 Test();
