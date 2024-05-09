@@ -26,7 +26,6 @@ var t_map = []
 var x_quads = 3;
 var y_quads = 3;
 
-var renderCount = 0;
 const showNoise = false;
 function Test() {
     seed_locs = []
@@ -48,8 +47,7 @@ function Test() {
     this.x_quads = document.getElementById('x_quads').value;
     this.y_quads = document.getElementById('y_quads').value;
     // }
-    renderCount++
-    // Set variables from user input
+
     generate_quadrants(x_quads, y_quads) // Will generate x * y quadrants
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
