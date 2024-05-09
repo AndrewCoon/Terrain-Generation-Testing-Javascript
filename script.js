@@ -1,8 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const height = 400;
-const width = 400;
+var height = 400;
+var width = 400;
 
 canvas.height = height;
 canvas.width = width;
@@ -23,9 +23,34 @@ var t_heat = [];
 var t_humidity = [];
 var t_map = []
 
-const showNoise = true;
+var x_quads = 3;
+var y_quads = 3;
+
+var renderCount = 0;
+const showNoise = false;
 function Test() {
-    generate_quadrants(5, 3) // Will generate x * y quadrants
+    seed_locs = []
+    seed_colors = []
+
+    biome_data = []
+
+    t_height = [];
+    t_heat = [];
+    t_humidity = [];
+    t_map = []
+    // if (renderCount > 0) {
+    this.width = document.getElementById('width').value;
+    this.height = document.getElementById('height').value;
+
+    canvas.height = height;
+    canvas.width = width;
+
+    this.x_quads = document.getElementById('x_quads').value;
+    this.y_quads = document.getElementById('y_quads').value;
+    // }
+    renderCount++
+    // Set variables from user input
+    generate_quadrants(x_quads, y_quads) // Will generate x * y quadrants
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
     generate_noise_maps();
@@ -37,8 +62,8 @@ function Test() {
 
     set_biome_types();
 
-    // new_noise_map(400, 400); // Show noise var
-    // show_biomes();
+    // new_noise_map(width, height); // Show noise var
+    show_quadrants();
     draw_biome_centers(3, "red")
 }
 
@@ -143,7 +168,7 @@ function get_closest_biome_seed(x, y) {
         let dist = Math.pow(seed.x - x, 2) + Math.pow(seed.y - y, 2)
         dist = Math.sqrt(dist)
 
-        if (dist < closest_seed_dist && dist > 2) { // TODO: Check why it should be greater than 2
+        if (dist < closest_seed_dist /*&& dist > 2*/) { // TODO: Check why it should be greater than 2
             closest_seed_index = seed_index;
             closest_seed_dist = dist;
         }
@@ -171,7 +196,7 @@ function add_biome_nodes() {
 var biome_image = ctx.createImageData(canvas.width, canvas.height);
 var biome_image_data = biome_image.data;
 
-function show_biomes() {
+function show_quadrants() {
     for (var i = 0; i < seed_locs.length; i++) {
         seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
     }
@@ -199,15 +224,18 @@ function set_biome_types() {
     biome_data.forEach(biome => {
         // Maybe change this system in the future
         let reqs = []
-        if (biome.avg_heat > 0.5) reqs.push("hot")
+        if (biome.avg_heat >= 0.5) reqs.push("hot")
         if (biome.avg_heat < 0.5) reqs.push("cold")
-        if (biome.avg_humidity > 0.5) reqs.push("humid")
+        if (biome.avg_humidity >= 0.5) reqs.push("humid")
         if (biome.avg_humidity < 0.5) reqs.push("dry")
-        if (biome.avg_height > 0.5) reqs.push("high")
+        if (biome.avg_height >= 0.5) reqs.push("high")
         if (biome.avg_height < 0.5) reqs.push("low")
 
         biome.requirements = reqs
+
+        biome.biome_type = new BiomeType(reqs)
+        biome.biome_type.set_biome();
     })
 }
 
-Test();
+// Test();
