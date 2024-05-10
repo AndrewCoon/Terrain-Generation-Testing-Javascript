@@ -8,12 +8,16 @@ canvas.height = height;
 canvas.width = width;
 
 const biomeseedcountH = document.getElementById('biome_seed_count')
+const biome_data_div = document.getElementById('biome_data')
 
 // An array of the center points of each biome
 var seed_locs = []
 
 // The biome data for each biome
 var biome_data = []
+
+// List of the data for each biome from the json file
+var biomes_list = []
 
 // An array to store colors for debugging biome setting
 var seed_colors = []
@@ -57,6 +61,8 @@ function Test() {
 
     add_biome_nodes();
     compute_biome_averages();
+
+    read_biomes_json('biome_data/test.json');
 
     set_biome_types();
 
@@ -215,24 +221,25 @@ function show_quadrants() {
 function compute_biome_averages() {
     biome_data.forEach(biome => {
         biome.compute_averages();
+
+        let temp = biome_data_div.appendChild(document.createElement('p'))
+        temp.innerHTML = biome.avg_height() + " " + biome.avg_heat() + " " + biome.avg_humidity();
     })
+}
+
+function read_biomes_json(src) {
+    fs.readFile(src, 'utf-8', function(err, data) {
+        if (err) throw err;
+
+        var obj = JSON.parse(data);
+
+        biomes_list = obj;
+    });
 }
 
 function set_biome_types() {
     biome_data.forEach(biome => {
-        // Maybe change this system in the future
-        let reqs = []
-        if (biome.avg_heat >= 0.5) reqs.push("hot")
-        if (biome.avg_heat < 0.5) reqs.push("cold")
-        if (biome.avg_humidity >= 0.5) reqs.push("humid")
-        if (biome.avg_humidity < 0.5) reqs.push("dry")
-        if (biome.avg_height >= 0.5) reqs.push("high")
-        if (biome.avg_height < 0.5) reqs.push("low")
-
-        biome.requirements = reqs
-
-        biome.biome_type = new BiomeType(reqs)
-        biome.biome_type.set_biome();
+        biome.set_biome()
     })
 }
 

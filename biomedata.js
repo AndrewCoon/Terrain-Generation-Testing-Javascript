@@ -41,39 +41,3 @@ class BiomeData {
     get avg_humidity() { return this.avg_humidity }
 }
 
-class BiomeType {
-    fs = require('fs');
-
-    name = "none"
-    requirements = []
-    color = "white"
-
-    biomes = [
-    ]
-
-    constructor(reqs) {
-        this.requirements = reqs
-    }
-
-    set_biome() { // TODO: revampt this system
-        this.biomes.forEach(biome => {
-            if (this.requirements.includes(biome[1][0]) && this.requirements.includes(biome[1][1]) && this.requirements.includes(biome[1][2])) {
-                this.biome_type = biome[0]
-                this.color = biome[2]
-            } else {
-                this.biome_type = "Null"
-                this.color = [180, 63, 209]
-            }
-        })
-    }
-
-    read_biomes_json(src) {
-        fs.readFile(src, 'utf-8', function(err, data) {
-            if (err) throw err;
-
-            var obj = JSON.parse(data);
-
-            biomes = obj;
-        });
-    }
-}
