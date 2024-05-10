@@ -13,7 +13,7 @@ class BiomeData {
 
     constructor() { }
 
-    static average(vals) {
+    average(vals) {
         let sum = 0;
 
         for (let i = 0; i < vals.length; i++) {
@@ -31,9 +31,9 @@ class BiomeData {
     }
 
     compute_averages() {
-        this.avg_height = average(this.height_nodes)
-        this.avg_heat = average(this.heat_nodes)
-        this.avg_humidity = average(this.humidity_nodes)
+        this.avg_height = this.average(this.height_nodes)
+        this.avg_heat = this.average(this.heat_nodes)
+        this.avg_humidity = this.average(this.humidity_nodes)
     }
 
     get avg_heat() { return this.avg_heat }
@@ -42,20 +42,16 @@ class BiomeData {
 }
 
 class BiomeType {
+    fs = require('fs');
+
     name = "none"
     requirements = []
     color = "white"
 
     biomes = [
-        ["Grasslands", ["low", "humid", "hot"], [30, 200, 30]],
-        ["Tundra", ["low", "dry", "cold"], [240, 240, 240]],
-        ["Mountain", ["high", "dry", "cold"], [100, 100, 100]]
-        ["Desert", ["low", "dry", "cold"], [195, 212, 119]]
-        ["Null", ["", "", ""], [180, 63, 209]]
     ]
 
-    constructor(name, reqs) {
-        this.name = name
+    constructor(reqs) {
         this.requirements = reqs
     }
 
@@ -69,5 +65,15 @@ class BiomeType {
                 this.color = [180, 63, 209]
             }
         })
+    }
+
+    read_biomes_json(src) {
+        fs.readFile(src, 'utf-8', function(err, data) {
+            if (err) throw err;
+
+            var obj = JSON.parse(data);
+
+            biomes = obj;
+        });
     }
 }
