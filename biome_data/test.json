@@ -1,0 +1,34 @@
+{
+  "biomes": [
+    {
+      "name": "Tropical Rainforest",
+      "height": {"min": 0, "max": 500},
+      "heat": {"min": 25, "max": 40},
+      "humidity": {"min": 70, "max": 100}
+    },
+    {
+      "name": "Temperate Forest",
+      "height": {"min": 100, "max": 1000},
+      "heat": {"min": 10, "max": 25},
+      "humidity": {"min": 50, "max": 80}
+    },
+    {
+      "name": "Alpine Tundra",
+      "height": {"min": 800, "max": 3000},
+      "heat": {"min": -10, "max": 10},
+      "humidity": {"min": 0, "max": 30}
+    },
+    {
+      "name": "Desert",
+      "height": {"min": 0, "max": 1000},
+      "heat": {"min": 25, "max": 50},
+      "humidity": {"min": 0, "max": 30}
+    },
+    {
+      "name": "Grassland",
+      "height": {"min": 0, "max": 1500},
+      "heat": {"min": 10, "max": 30},
+      "humidity": {"min": 20, "max": 60}
+    }
+  ]
+}
