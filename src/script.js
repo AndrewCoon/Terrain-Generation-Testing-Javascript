@@ -85,7 +85,6 @@ function Test() {
 
     set_biome_types();
 
-    new_noise_map(canvas_size, canvas_size, showNoise=true); // Show noise var
     show_quadrants();
     draw_biome_centers(3, "red")
 }
@@ -188,11 +187,13 @@ function new_noise_map(_x, _y, showNoise = false) {
     if(do_seed_change) perlin.seed();
 
     let pixSize = canvas_size / resolution
-    for (var y = 0; y < grid_size; y += grid_size / resolution){
+    for (var y = 0; y < grid_size; y += grid_size / resolution) {
         for (var x = 0; x < grid_size; x += grid_size / resolution){
             var v = parseInt((perlin.get(x, y)/2 + 0.5) * 255)
-            ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'
-            ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixSize, pixSize)
+            if(showNoise) {
+                ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'
+                ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixSize, pixSize)
+            }
         }
     }
 
