@@ -1,5 +1,3 @@
-// Source: https://joeiddon.github.io/perlin/perlin.js
-
 'use strict';
 let perlin = {
     rand_vect: function(){
