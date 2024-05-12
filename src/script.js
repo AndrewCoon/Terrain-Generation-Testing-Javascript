@@ -183,37 +183,27 @@ function draw_biome_centers(size, color) {
 
 function new_noise_map(_x, _y, showNoise = false) {
     var map = []
-
+    var times_run = 0
     if(do_seed_change) perlin.seed();
 
-    let pixSize = canvas_size / resolution
-    for (var y = 0; y < grid_size; y += grid_size / resolution) {
-        for (var x = 0; x < grid_size; x += grid_size / resolution){
+    let pixel_size = canvas_size / resolution
+    for (var x = 0; x < grid_size; x += grid_size / resolution){
+        map[8 * x * canvas_size * pixel_size / resolution] = []
+        for (var y = 0; y < grid_size; y += grid_size / resolution) {
             var v = parseInt((perlin.get(x, y)/2 + 0.5) * 255)
+
+            map[8 * x * canvas_size * pixel_size / resolution][8 * y * canvas_size * pixel_size / resolution] = v;
+
             if(showNoise) {
                 ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'
-                ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixSize, pixSize)
+                ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
             }
+
+            
         }
+        times_run++
     }
-
-    // for (var x = 0; x < grid_size; x += grid_size / width) {
-    //     map[x * this.width/resolution] = []
-    //     for (var y = 0; y < grid_size; y += grid_size / height) {
-    //         // var value = Math.abs(perlin.get(x / 75, y / 75)); // Snake lookin one
-    //         var value = parseInt(perlin.get(x, y)/2+0.5) * 255
-
-    //         map[x * this.width/resolution][y * this.height/resolution] = value;
-
-    //         // For showing it as image
-    //         var cell = (x * this.width/resolution + y * this.height/resolution * _x) * 4;
-    //         noise_data[cell] = noise_data[cell + 1] = noise_data[cell + 2] = value;
-    //         noise_data[cell + 3] = 255; // alpha.
-    //     }
-    // }
-
-    // if (showNoise) ctx.putImageData(noise_image, 0, 0);
-
+    console.log(times_run)
     return map;
 }
 
@@ -224,8 +214,8 @@ function generate_noise_maps() {
 }
 
 function set_biome_index() {
-    for (let y = 0; y < canvas_size; y++) {
-        for (let x = 0; x < canvas_size; x++) {
+    for (let y = 0; y < resolution; y++) {
+        for (let x = 0; x < resolution; x++) {
             var tile_biome = get_closest_biome_seed(x, y);
             t_map[x][y].biome_index = tile_biome;
         }
@@ -250,9 +240,9 @@ function get_closest_biome_seed(x, y) {
 }
 
 function generate_tile_map() {
-    for (let x = 0; x < canvas_size; x++) {
+    for (let x = 0; x < resolution; x++) {
         t_map[x] = []
-        for (let y = 0; y < canvas_size; y++) {
+        for (let y = 0; y < resolution; y++) {
             let temp = new Tile(new Point(x, y))
             temp.heat = t_heat[x][y]
             temp.height = t_height[x][y]
@@ -270,33 +260,29 @@ function add_biome_nodes() {
     });
 }
 
-var biome_image = ctx.createImageData(this.canvas_size, this.canvas_size);
-var biome_image_data = biome_image.data;
-
 function show_quadrants() {
     for (var i = 0; i < seed_locs.length; i++) {
         seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
     }
 
-    for (let x = 0; x < this.canvas_size; x++) {
-        for (let y = 0; y < this.height; y++) {
-            var cell = (x + y * this.canvas_size) * 4;
-            biome_image_data[cell + 0] = seed_colors[t_map[x][y].biome_index].r
-            biome_image_data[cell + 1] = seed_colors[t_map[x][y].biome_index].g
-            biome_image_data[cell + 2] = seed_colors[t_map[x][y].biome_index].b
-            biome_image_data[cell + 3] = 255; // alpha.
+    let pixel_size = canvas_size / resolution
+    for (var x = 0; x < grid_size; x += grid_size / resolution){
+        for (var y = 0; y < grid_size; y += grid_size / resolution) {
+            let real_x = 8 * x * canvas_size * pixel_size / resolution;
+            let real_y = 8 * y * canvas_size * pixel_size / resolution
+            
+            ctx.fillStyle = 'rgb(' + seed_colors[t_map[real_x][real_y].biome_index].r + ',' + seed_colors[t_map[real_x][real_y].biome_index].g + ',' + seed_colors[t_map[real_x][real_y].biome_index].b + ')'
+            ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
         }
     }
-
-    ctx.putImageData(biome_image, 0, 0);
 }
 
 function compute_biome_averages() {
     biome_data.forEach(biome => {
         biome.compute_averages();
 
-        let temp = biome_data_div.appendChild(document.createElement('p'))
-        temp.innerHTML = "Height: " + Math.floor(biome.avg_height) + " Heat: " + Math.floor(biome.avg_heat) + " Humidity: " + Math.floor(biome.avg_humidity);
+        // let temp = biome_data_div.appendChild(document.createElement('p'))
+        // temp.innerHTML = "Height: " + Math.floor(biome.avg_height) + " Heat: " + Math.floor(biome.avg_heat) + " Humidity: " + Math.floor(biome.avg_humidity);
     })
 }
 
@@ -333,4 +319,5 @@ function change_seed() {
         seed_change_button.innerHTML = 'Seed Locked'
     }
 }
-Test();
+
+// Test();
