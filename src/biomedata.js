@@ -1,8 +1,6 @@
 class BiomeData {
-    color = "";
-    biome_type = "none"
-    // biome_index = -1
-
+    biome_info;
+    
     height_nodes = []
     heat_nodes = []
     humidity_nodes = []
@@ -36,12 +34,13 @@ class BiomeData {
         this.avg_humidity = this.average(this.humidity_nodes)
     }
 
+    set_biome_info(biome_type) {
+       this.biome_info = biomes_list[biome_type];
+    }
+    
     get avg_heat() { return this.avg_heat }
     get avg_height() { return this.avg_height }
     get avg_humidity() { return this.avg_humidity }
     get color() { return this.color }
-
-    set_biome_info(biome_type) {
-    //    biome_data 
-    }
+    get biome_info() { return this.biome_info }
 }
