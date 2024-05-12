@@ -248,13 +248,13 @@ function draw_biome_centers(size, color) {
 
 function new_noise_map(showNoise = false) {
     var map = []
-    if(do_seed_change) { perlin.seed(); }
+    if(do_seed_change) { noise.seed(Math.random()) }
 
     let pixel_size = canvas_size / resolution
     for (var x = 0; x < grid_size; x += grid_size / resolution){
         map[x * resolution / grid_size] = []
         for (var y = 0; y < grid_size; y += grid_size / resolution) {
-            var v = parseInt((perlin.get(x, y)/2 + 0.5) * 255)
+            var v = parseInt((noise.perlin2(x, y)/2 + 0.5) * 255)
 
             map[x * resolution / grid_size][y * resolution / grid_size] = v;
 
