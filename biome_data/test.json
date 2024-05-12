@@ -29,6 +29,12 @@
       "heat": {"min": 10, "max": 30},
       "humidity": {"min": 20, "max": 60},
       "color": "#D5DBDB"
+    },
+    "Unknown": {
+      "height": {"min": -1, "max": -1},
+      "heat": {"min": -1, "max": -1},
+      "humidity": {"min": -1, "max": -1},
+      "color": "purple"
     }
   }
 }
