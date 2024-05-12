@@ -9,6 +9,8 @@ canvas.width = canvas_size;
 var grid_size = 4
 var resolution = 128
 
+const value_range = 3000;
+
 var do_seed_change = true;
 
 const biomeseedcountH = document.getElementById('biome_seed_count')
@@ -246,19 +248,20 @@ function draw_biome_centers(size, color) {
 }
 
 
-function new_noise_map(showNoise = false) {
+function new_noise_map(show_noise = false) {
     var map = []
-    if(do_seed_change) { noise.seed(Math.random()) }
+    if(do_seed_change || !show_noise) { noise.seed(Math.random()) }
 
     let pixel_size = canvas_size / resolution
     for (var x = 0; x < grid_size; x += grid_size / resolution){
         map[x * resolution / grid_size] = []
         for (var y = 0; y < grid_size; y += grid_size / resolution) {
-            var v = parseInt((noise.perlin2(x, y)/2 + 0.5) * 255)
+            var v = Math.abs(parseInt((noise.perlin2(x, y) / 2 + .5) * 255))
+            var t_v = v / 255 * value_range;
 
-            map[x * resolution / grid_size][y * resolution / grid_size] = v;
+            map[x * resolution / grid_size][y * resolution / grid_size] = t_v;
 
-            if(showNoise) {
+            if(show_noise) {
                 ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'
                 ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
             }
@@ -374,11 +377,11 @@ function read_biomes_json(src) {
 
 function set_biome_types() {
     biome_data.forEach(biome => {
-        biome.set_biome_info(findBiome(biome));
+        biome.set_biome_info(find_biome(biome));
     })
 }
 
-function findBiome(quadrant) {
+function find_biome(quadrant) {
     for (const biome_name in biomes_list['biomes']) {
         const { height, heat, humidity } = biomes_list['biomes'][biome_name];
     
@@ -387,7 +390,7 @@ function findBiome(quadrant) {
             quadrant.avg_heat >= heat.min && quadrant.avg_heat <= heat.max &&
             quadrant.avg_humidity >= humidity.min && quadrant.avg_humidity <= humidity.max
         ) {
-            return biome.name;
+            return biome_name;
         }
     }
 
