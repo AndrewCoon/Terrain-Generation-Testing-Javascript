@@ -35,7 +35,7 @@ class BiomeData {
     }
 
     set_biome_info(biome_type) {
-       this.biome_info = biomes_list[biome_type];
+       this.biome_info = biomes_list['biomes'][biome_type];
     }
     
     get avg_heat() { return this.avg_heat }
