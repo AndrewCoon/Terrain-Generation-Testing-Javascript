@@ -35,12 +35,13 @@ var x_quads = 3;
 var y_quads = 3;
 
 var rendered = false;
-function Test() {
+function TestQuadrants() {
     if (rendered) {
-        seed_locs = []
-        seed_colors = []
-
-        biome_data = []
+        if(do_seed_change) { 
+            biome_data = []; 
+            seed_colors = []; 
+            seed_locs = []; 
+        }
 
         t_height = [];
         t_heat = [];
@@ -86,15 +87,16 @@ function Test() {
     set_biome_types();
 
     show_quadrants();
-    draw_biome_centers(3, "red")
+    draw_biome_centers(3, "white")
 }
 
 function TestNoise() {
     if (rendered) {
-        seed_locs = []
-        seed_colors = []
-
-        biome_data = []
+        if(do_seed_change) { 
+            biome_data = []; 
+            seed_colors = []; 
+            seed_locs = []; 
+        }
 
         t_height = [];
         t_heat = [];
@@ -126,7 +128,7 @@ function TestNoise() {
     }
     biomeseedcountH.innerHTML = "";
 
-    new_noise_map(canvas_size, canvas_size, showNoise=true); // Show noise var
+    new_noise_map(showNoise=true); // Show noise var
     draw_biome_centers(3, "red")
 }
 
@@ -158,8 +160,10 @@ function random(min, max) {
 }
 
 function generate_quadrants(x_div, y_div) {
-    let quad_width = canvas_size / x_div;
-    let quad_height = canvas_size / y_div;
+    if(!do_seed_change) return;
+    
+    let quad_width = resolution / x_div;
+    let quad_height = resolution / y_div;
 
     for (let x = 0; x < x_div; x++) {
         for (let y = 0; y < y_div; y++) {
@@ -171,9 +175,10 @@ function generate_quadrants(x_div, y_div) {
 }
 
 function draw_biome_centers(size, color) {
+    let pixel_size = canvas_size / resolution
     for (let i = 0; i < seed_locs.length; i++) {
-        let x = seed_locs[i].x;
-        let y = seed_locs[i].y;
+        let x = seed_locs[i].x * pixel_size;
+        let y = seed_locs[i].y * pixel_size;
 
         ctx.fillStyle = color;
         ctx.fillRect(x, y, size, size);
@@ -181,18 +186,18 @@ function draw_biome_centers(size, color) {
 }
 
 
-function new_noise_map(_x, _y, showNoise = false) {
+function new_noise_map(showNoise = false) {
     var map = []
     var times_run = 0
     if(do_seed_change) perlin.seed();
 
     let pixel_size = canvas_size / resolution
     for (var x = 0; x < grid_size; x += grid_size / resolution){
-        map[8 * x * canvas_size * pixel_size / resolution] = []
+        map[x * resolution / grid_size] = []
         for (var y = 0; y < grid_size; y += grid_size / resolution) {
             var v = parseInt((perlin.get(x, y)/2 + 0.5) * 255)
 
-            map[8 * x * canvas_size * pixel_size / resolution][8 * y * canvas_size * pixel_size / resolution] = v;
+            map[x * resolution / grid_size][y * resolution / grid_size] = v;
 
             if(showNoise) {
                 ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'
@@ -208,9 +213,9 @@ function new_noise_map(_x, _y, showNoise = false) {
 }
 
 function generate_noise_maps() {
-    t_heat = new_noise_map(canvas_size, canvas_size)
-    t_humidity = new_noise_map(canvas_size, canvas_size)
-    t_height = new_noise_map(canvas_size, canvas_size)
+    t_heat = new_noise_map()[0]
+    t_humidity = new_noise_map()[0]
+    t_height = new_noise_map()[0]
 }
 
 function set_biome_index() {
@@ -261,15 +266,17 @@ function add_biome_nodes() {
 }
 
 function show_quadrants() {
-    for (var i = 0; i < seed_locs.length; i++) {
-        seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
+    if(do_seed_change) {
+        for (var i = 0; i < seed_locs.length; i++) {
+            seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
+        }
     }
 
     let pixel_size = canvas_size / resolution
     for (var x = 0; x < grid_size; x += grid_size / resolution){
         for (var y = 0; y < grid_size; y += grid_size / resolution) {
-            let real_x = 8 * x * canvas_size * pixel_size / resolution;
-            let real_y = 8 * y * canvas_size * pixel_size / resolution
+            let real_x = x * resolution / grid_size;
+            let real_y = y * resolution / grid_size;
             
             ctx.fillStyle = 'rgb(' + seed_colors[t_map[real_x][real_y].biome_index].r + ',' + seed_colors[t_map[real_x][real_y].biome_index].g + ',' + seed_colors[t_map[real_x][real_y].biome_index].b + ')'
             ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
