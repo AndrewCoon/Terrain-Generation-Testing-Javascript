@@ -202,7 +202,7 @@ class Tile {
     height;
     heat;
     humidity;
-    colors;
+    color;
     biome_index;
 
     constructor(_point) {
