@@ -39,11 +39,14 @@ var y_quads = 3;
 read_biomes_json('biome_data/test.json');
 
 var rendered = false;
+var quadrants_rendered = false;
 function TestQuadrants() {
     if (rendered) {
         if(do_seed_change) { 
             biome_data = []; 
-            seed_colors = []; 
+            if(quadrants_rendered) {
+                seed_colors = []; 
+            }
             seed_locs = []; 
         }
 
@@ -85,6 +88,7 @@ function TestQuadrants() {
 
     show_quadrants();
     draw_biome_centers(3, "white")
+    quadrants_rendered = true;
 }
 
 function TestNoise() {
