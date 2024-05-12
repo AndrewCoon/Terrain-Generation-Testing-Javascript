@@ -413,7 +413,7 @@ function draw_quadrant_biomes() {
             let real_x = x * resolution / grid_size;
             let real_y = y * resolution / grid_size;
            
-            ctx.fillStyle(t_map[real_x][real_y].color);
+            ctx.fillStyle = t_map[real_x][real_y].color;
             ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
         }
     } 
