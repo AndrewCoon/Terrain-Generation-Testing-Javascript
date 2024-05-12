@@ -34,6 +34,8 @@ var t_map = []
 var x_quads = 3;
 var y_quads = 3;
 
+read_biomes_json('biome_data/test.json');
+
 var rendered = false;
 function TestQuadrants() {
     if (rendered) {
@@ -78,12 +80,6 @@ function TestQuadrants() {
     generate_noise_maps();
     generate_tile_map();
     set_biome_index();
-
-    add_biome_nodes();
-    compute_biome_averages();
-
-    read_biomes_json('../biome_data/test.json');
-    set_biome_types();
 
     show_quadrants();
     draw_biome_centers(3, "white")
@@ -168,10 +164,10 @@ function TestTerrain() {
         rendered = true 
     }
     
+
     generate_quadrants(x_quads, y_quads) // Will generate x * y quadrants
     biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
 
-    read_biomes_json('biome_data/test.json');
     generate_noise_maps();
     generate_tile_map();
     set_biome_index();
@@ -180,6 +176,7 @@ function TestTerrain() {
     compute_biome_averages();
 
     set_biome_types();
+    set_tile_colors();
 
     draw_quadrant_biomes();
     draw_biome_centers(3, "white")
@@ -251,8 +248,7 @@ function draw_biome_centers(size, color) {
 
 function new_noise_map(showNoise = false) {
     var map = []
-    var times_run = 0
-    if(do_seed_change) perlin.seed();
+    if(do_seed_change) { perlin.seed(); }
 
     let pixel_size = canvas_size / resolution
     for (var x = 0; x < grid_size; x += grid_size / resolution){
@@ -269,16 +265,14 @@ function new_noise_map(showNoise = false) {
 
             
         }
-        times_run++
     }
-    console.log(times_run)
     return map;
 }
 
 function generate_noise_maps() {
-    t_heat = new_noise_map()[0]
-    t_humidity = new_noise_map()[0]
-    t_height = new_noise_map()[0]
+    t_heat = new_noise_map()
+    t_humidity = new_noise_map()
+    t_height = new_noise_map()
 }
 
 function set_biome_index() {
@@ -308,16 +302,22 @@ function get_closest_biome_seed(x, y) {
 }
 
 function generate_tile_map() {
+    var ret = []
     for (let x = 0; x < resolution; x++) {
+        ret[x] = []
         t_map[x] = []
         for (let y = 0; y < resolution; y++) {
-            let temp = new Tile(new Point(x, y))
+            var temp = new Tile(new Point(x, y))
+            
             temp.heat = t_heat[x][y]
             temp.height = t_height[x][y]
             temp.humidity = t_humidity[x][y]
+
+            ret[x][y] = temp;
             t_map[x][y] = temp;
         }
     }
+    return ret;
 }
 
 function add_biome_nodes() {
@@ -379,28 +379,38 @@ function set_biome_types() {
 }
 
 function findBiome(quadrant) {
-    biomes_list['biomes'].forEach(biome => {
-      const { height, heat, humidity } = biome;
-  
-      if (
-        quadrant.avg_height >= height.min && quadrant.avg_height <= height.max &&
-        quadrant.avg_heat >= heat.min && quadrant.avg_heat <= heat.max &&
-        quadrant.avg_humidity >= humidity.min && quadrant.avg_humidity <= humidity.max
-      ) {
-        return biome.name;
-      }
-    })
+    for (const biome_name in biomes_list['biomes']) {
+        const { height, heat, humidity } = biomes_list['biomes'][biome_name];
+    
+        if (
+            quadrant.avg_height >= height.min && quadrant.avg_height <= height.max &&
+            quadrant.avg_heat >= heat.min && quadrant.avg_heat <= heat.max &&
+            quadrant.avg_humidity >= humidity.min && quadrant.avg_humidity <= humidity.max
+        ) {
+            return biome.name;
+        }
+    }
 
     return "Unknown";
-  }
+}
+
+function set_tile_colors() {
+    t_map.forEach(element => {
+        element.forEach(tile => {
+            tile.color = biome_data[tile.biome_index].biome_info['color'];
+        })
+    })
+}
 
 function draw_quadrant_biomes() {
-  for (var x = 0; x < grid_size; x += grid_size / resolution){
+    let pixel_size = canvas_size / resolution
+
+    for (var x = 0; x < grid_size; x += grid_size / resolution){
         for (var y = 0; y < grid_size; y += grid_size / resolution) {
             let real_x = x * resolution / grid_size;
             let real_y = y * resolution / grid_size;
-            
-            ctx.fillStyle = 'rgb(' + biome_data[t_map[real_x][real_y].biome_index].color.r + ',' + biome_data[t_map[real_x][real_y].biome_index].color.g  + ',' + biome_data[t_map[real_x][real_y].biome_index].color.b  + ')'
+           
+            ctx.fillStyle(t_map[real_x][real_y].color);
             ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
         }
     } 
