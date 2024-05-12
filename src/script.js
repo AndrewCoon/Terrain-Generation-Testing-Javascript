@@ -336,7 +336,7 @@ function add_biome_nodes() {
 }
 
 function show_quadrants() {
-    if(do_seed_change) {
+    if(do_seed_change || !quadrants_rendered) {
         for (var i = 0; i < seed_locs.length; i++) {
             seed_colors.push(new RGB(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)))
         }
