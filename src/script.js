@@ -82,8 +82,7 @@ function TestQuadrants() {
     add_biome_nodes();
     compute_biome_averages();
 
-    read_biomes_json('biome_data/test.json');
-
+    read_biomes_json('../biome_data/test.json');
     set_biome_types();
 
     show_quadrants();
@@ -132,13 +131,66 @@ function TestNoise() {
     draw_biome_centers(3, "red")
 }
 
+function TestTerrain() {
+    if (rendered) {
+        if(do_seed_change) { 
+            biome_data = []; 
+            seed_colors = []; 
+            seed_locs = []; 
+        }
+
+        t_height = [];
+        t_heat = [];
+        t_humidity = [];
+        t_map = []
+
+        this.canvas_size = document.getElementById('size').value;
+
+        this.resolution = document.getElementById('res').value;
+        this.grid_size = document.getElementById('g_size').value;
+
+        canvas.height = canvas_size;
+        canvas.width = canvas_size;
+
+        this.x_quads = document.getElementById('x_quads').value;
+        this.y_quads = document.getElementById('y_quads').value;
+        
+        biome_data_div = document.createElement('div')
+    } else { 
+        document.getElementById('size').value = this.canvas_size;
+
+        document.getElementById('x_quads').value = this.x_quads;
+        document.getElementById('y_quads').value = this.y_quads;
+
+        document.getElementById('res').value = this.resolution;
+        document.getElementById('g_size').value = this.grid_size;
+
+        rendered = true 
+    }
+    
+    generate_quadrants(x_quads, y_quads) // Will generate x * y quadrants
+    biomeseedcountH.innerHTML = "Biome Seed Count: " + seed_locs.length;
+
+    read_biomes_json('biome_data/test.json');
+    generate_noise_maps();
+    generate_tile_map();
+    set_biome_index();
+
+    add_biome_nodes();
+    compute_biome_averages();
+
+    set_biome_types();
+
+    draw_quadrant_biomes();
+    draw_biome_centers(3, "white")
+}
+
 class Point {
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
 }
-
 class RGB {
     constructor(r, g, b) {
         this.r = r;
@@ -148,9 +200,20 @@ class RGB {
 }
 
 class Tile {
+    height;
+    heat;
+    humidity;
+    colors;
+    biome_index;
+
     constructor(_point) {
         this.point = _point;
     }
+
+    get height() { return this.height }
+    get heat() { return this.heat }
+    get humidity() { return this.humidity }
+    get color() { return this.color }
 }
 
 function random(min, max) {
@@ -288,32 +351,59 @@ function compute_biome_averages() {
     biome_data.forEach(biome => {
         biome.compute_averages();
 
-        // let temp = biome_data_div.appendChild(document.createElement('p'))
-        // temp.innerHTML = "Height: " + Math.floor(biome.avg_height) + " Heat: " + Math.floor(biome.avg_heat) + " Humidity: " + Math.floor(biome.avg_humidity);
+        let temp = biome_data_div.appendChild(document.createElement('p'))
+        temp.innerHTML = "Height: " + Math.floor(biome.avg_height) + " Heat: " + Math.floor(biome.avg_heat) + " Humidity: " + Math.floor(biome.avg_humidity);
     })
 }
 
 function read_biomes_json(src) {
     fetch(src)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log(data);
-  })
-  .catch(error => {
-    console.error('There was a problem fetching the JSON file:', error);
-  });
-
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            this.biomes_list = data;
+        })
+        .catch(error => {
+            console.error('There was a problem fetching the JSON file:', error);
+        });
 }
 
 function set_biome_types() {
     biome_data.forEach(biome => {
-        biome.set_biome_info();
+        biome.set_biome_info(findBiome(biome));
     })
+}
+
+function findBiome(quadrant) {
+    biomes_list['biomes'].forEach(biome => {
+      const { height, heat, humidity } = biome;
+  
+      if (
+        quadrant.avg_height >= height.min && quadrant.avg_height <= height.max &&
+        quadrant.avg_heat >= heat.min && quadrant.avg_heat <= heat.max &&
+        quadrant.avg_humidity >= humidity.min && quadrant.avg_humidity <= humidity.max
+      ) {
+        return biome.name;
+      }
+    })
+
+    return "Unknown";
+  }
+
+function draw_quadrant_biomes() {
+  for (var x = 0; x < grid_size; x += grid_size / resolution){
+        for (var y = 0; y < grid_size; y += grid_size / resolution) {
+            let real_x = x * resolution / grid_size;
+            let real_y = y * resolution / grid_size;
+            
+            ctx.fillStyle = 'rgb(' + biome_data[t_map[real_x][real_y].biome_index].color.r + ',' + biome_data[t_map[real_x][real_y].biome_index].color.g  + ',' + biome_data[t_map[real_x][real_y].biome_index].color.b  + ')'
+            ctx.fillRect(x * (canvas_size / grid_size), y * (canvas_size / grid_size), pixel_size, pixel_size)
+        }
+    } 
 }
 
 const seed_change_button = document.getElementById('seed')
@@ -326,5 +416,3 @@ function change_seed() {
         seed_change_button.innerHTML = 'Seed Locked'
     }
 }
-
-// Test();
